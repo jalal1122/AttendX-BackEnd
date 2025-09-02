@@ -21,6 +21,22 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  department: {
+    type: String,
+    required: true,
+  },
+  section: {
+    type: String,
+    required: true,
+  },
+  subject: {
+    type: [String],
+    default: [],
+  },
+  year: {
+    type: Number,
+    required: true,
+  },
   deviceIds: {
     type: [String],
     default: [],
