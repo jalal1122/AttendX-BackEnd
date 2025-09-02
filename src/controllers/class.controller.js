@@ -31,7 +31,7 @@ export const createClass = asyncHandler(async (req, res) => {
 // Get All Classes for the respective login teacher
 export const getClasses = asyncHandler(async (req, res) => {
   // get the teacher id from the req user
-  const teacherId = req.user.id;
+  const teacherId = req.user._id;
 
   //   find all classes taught by the teacher
   const classes = await Class.find({ teacher: teacherId });
@@ -129,7 +129,7 @@ export const joinClass = asyncHandler(async (req, res) => {
   const { classId } = req.params;
 
   //   get the student id from the req user
-  const studentId = req.user.id;
+  const studentId = req.user._id;
 
   //   find the class to join
   const classToJoin = await Class.findById(classId);

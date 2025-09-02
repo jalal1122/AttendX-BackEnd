@@ -8,8 +8,9 @@ const sessionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    subject: {
-      type: String,
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
       required: true,
     },
     isActive: {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Attendance schema
 const attendanceSchema = new mongoose.Schema(
   {
     sessionId: {
@@ -17,11 +18,11 @@ const attendanceSchema = new mongoose.Schema(
       enum: ["present", "absent"],
       default: "",
     },
-    timestamp: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
+// Attendance Model
 const Attendance = mongoose.model("Attendance", attendanceSchema);
 
 export default Attendance;
