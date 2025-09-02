@@ -7,7 +7,7 @@ const classSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    code: {
+    classCode: {
       type: String,
     },
     students: [
@@ -26,6 +26,10 @@ const classSchema = new mongoose.Schema(
   }
 );
 
+classSchema.methods.checkIfStudentEnrolled = function (studentId) {
+  return this.students.includes(studentId);
+};
+
 // Method to generate class code
 classSchema.methods.generateClassCode = function () {
   // take first 3 letters from class name
@@ -37,7 +41,7 @@ classSchema.methods.generateClassCode = function () {
   return `${prefix}-${randomPart}`;
 };
 
-// Pre-save hook to assign code if not already set
+// Pre-save hook to assign classCode if not already set
 classSchema.pre("save", function (next) {
   if (!this.classCode) {
     this.classCode = this.generateClassCode();
