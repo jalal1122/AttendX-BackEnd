@@ -2,11 +2,32 @@ import Class from "../models/class.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import User from "../models/user.model.js";
 
 // Create a new Class
 export const createClass = asyncHandler(async (req, res) => {
   // get the class name and teacher id from the req body
-  const { className, teacherId } = req.body;
+  const { className } = req.body;
+
+  // get the teacher id from the req user
+  const teacherId = req.user._id;
+
+  // check for the existence of the teacher
+  const teacher = await User.findById(teacherId);
+  if (!teacher) {
+    throw new ApiError(404, "Teacher not found");
+  }
+
+  // check for the existence of the class
+  const existingClass = await Class.findOne({ className, teacher: teacherId });
+  if (existingClass) {
+    throw new ApiError(400, "Class already exists");
+  }
+
+  // check if the role is teacher
+  if (teacher.role !== "teacher") {
+    throw new ApiError(403, "Only teachers can create classes");
+  }
 
   // Validate request body
   if (!className || !teacherId) {
@@ -131,6 +152,15 @@ export const joinClass = asyncHandler(async (req, res) => {
   //   get the student id from the req user
   const studentId = req.user._id;
 
+  // check if user is existing or not and is a student
+  const student = await User.findById(studentId);
+  if (!student) {
+    throw new ApiError(404, "Student not found");
+  }
+  if (student.role !== "student") {
+    throw new ApiError(403, "Only students can join classes");
+  }
+
   //   find the class to join
   const classToJoin = await Class.findById(classId);
 
@@ -158,6 +188,20 @@ export const joinClass = asyncHandler(async (req, res) => {
 export const deleteClass = asyncHandler(async (req, res) => {
   // get the class Id from the req body
   const { classId } = req.params;
+
+  // check if user is a teacher
+  const teacher = await User.findById(req.user._id);
+  if (teacher.role !== "teacher") {
+    throw new ApiError(403, "Only teachers can delete classes");
+  }
+
+  // find the class by id
+  const classToDelete = await Class.findById(classId);
+
+  // check if class exists
+  if (!classToDelete) {
+    throw new ApiError(404, "Class not found");
+  }
 
   // find the class by id and delete
   const deletedClass = await Class.findByIdAndDelete(classId);

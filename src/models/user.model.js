@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  role: {
+    type: String,
+    enum: ["student", "teacher", "admin"],
+    default: "student",
+  },
   password: {
     type: String,
     required: true,
@@ -63,17 +68,25 @@ userSchema.pre("save", async function (next) {
 
 // Method to generate Access token
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ id: this._id, email: this.email }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-  });
+  const token = jwt.sign(
+    { id: this._id, email: this.email },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
   return token;
 };
 
 // Method to generate Refresh Token
 userSchema.methods.generateRefreshToken = function () {
-  const token = jwt.sign({ id: this._id, email: this.email }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-  });
+  const token = jwt.sign(
+    { id: this._id, email: this.email },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
   return token;
 };
 

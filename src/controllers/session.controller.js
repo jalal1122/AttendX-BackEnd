@@ -1,7 +1,9 @@
-import Session from "../models/Session.model.js";
+import Session from "../models/session.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import Class from "../models/class.model.js";
+import User from "../models/user.model.js";
 
 // create a new Session
 export const createSession = asyncHandler(async (req, res, next) => {
@@ -10,6 +12,23 @@ export const createSession = asyncHandler(async (req, res, next) => {
 
   // get the teacher Id from the req user
   const teacherId = req.user._id;
+
+  // check if the class exists
+  const classExists = await Class.findById(classId);
+  if (!classExists) {
+    throw new ApiError(404, "Class not found");
+  }
+
+  // check if the teacher exists
+  const teacherExists = await User.findById(teacherId);
+  if (!teacherExists) {
+    throw new ApiError(404, "Teacher not found");
+  }
+
+  // check if the role is teacher
+  if (teacherExists.role !== "teacher") {
+    throw new ApiError(403, "only teachers can create sessions");
+  }
 
   // check if there is an active session for the class
   const activeSession = await Session.findOne({
@@ -48,6 +67,23 @@ export const getActiveSessionByClassId = asyncHandler(
     // get the teacher Id from the req user
     const teacherId = req.user._id;
 
+    // check if the class exists
+    const classExists = await Class.findById(classId);
+    if (!classExists) {
+      throw new ApiError(404, "Class not found");
+    }
+
+    // check if the teacher exists
+    const teacherExists = await User.findById(teacherId);
+    if (!teacherExists) {
+      throw new ApiError(404, "Teacher not found");
+    }
+
+    // check for the teacher role
+    if (teacherExists.role !== "teacher") {
+      throw new ApiError(403, "only teachers can access this resource");
+    }
+
     // find the active session for the class
     const activeSession = await Session.findOne({
       classId,
@@ -80,6 +116,23 @@ export const endSession = asyncHandler(async (req, res, next) => {
 
   //   get the class ID from params
   const { classId } = req.params;
+
+  // check if the class exists
+  const classExists = await Class.findById(classId);
+  if (!classExists) {
+    throw new ApiError(404, "Class not found");
+  }
+
+  // check if the teacher exists
+  const teacherExists = await User.findById(teacherId);
+  if (!teacherExists) {
+    throw new ApiError(404, "Teacher not found");
+  }
+
+  // check for the teacher role
+  if (teacherExists.role !== "teacher") {
+    throw new ApiError(403, "only teachers can access this resource");
+  }
 
   // find the active session for the class
   const activeSession = await Session.findOne({

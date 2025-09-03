@@ -85,7 +85,7 @@ export const getAllSessions = asyncHandler(async (req, res, next) => {
 
 // get attendance by session Id
 export const getAttendanceBySessionId = asyncHandler(async (req, res, next) => {
-    // get the session Id from the params
+  // get the session Id from the params
   const { sessionId } = req.params;
 
   // find attendance records by session Id
@@ -105,7 +105,7 @@ export const getAttendanceBySessionId = asyncHandler(async (req, res, next) => {
 
 // get the attendance by student Id
 export const getAttendanceByStudentId = asyncHandler(async (req, res, next) => {
-    // get the student Id from the params
+  // get the student Id from the params
   const { studentId } = req.params;
 
   // find attendance records by student Id

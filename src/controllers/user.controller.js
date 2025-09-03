@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
-import ApiResponse from "../utils/Apiresponse.js";
+import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 // Cookie Option
