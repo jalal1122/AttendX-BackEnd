@@ -7,18 +7,18 @@ import {
 } from "../controllers/user.controller.js"
 import authMiddleware from "../middleware/auth.middleware.js"
 
-const router = express.Router();
+const userRouter = express.Router();
 
 // User registration
-router.post("/register", registerUser);
+userRouter.post("/register", registerUser);
 
 // User login
-router.post("/login", loginUser);
+userRouter.post("/login", loginUser);
 
 // User logout
-router.post("/logout", authMiddleware, logoutUser);
+userRouter.post("/logout", authMiddleware, logoutUser);
 
 // User token refresh
-router.post("/refresh-token", refreshAccessToken);
+userRouter.post("/refresh-token", refreshAccessToken);
 
-export default router;
+export default userRouter;
