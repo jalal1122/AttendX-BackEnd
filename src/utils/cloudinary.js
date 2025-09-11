@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
-import ApiError from "../errors/ApiError.js";
-import asyncHandler from "./asyncHandler";
+import ApiError from "./ApiError.js";
+import asyncHandler from "./asyncHandler.js";
 
 // upload the file to cloudinary
 export const uploadOnCloudinary = asyncHandler(async (filePath) => {
@@ -31,3 +31,5 @@ export const uploadOnCloudinary = asyncHandler(async (filePath) => {
 
   return result.secure_url;
 });
+
+export default cloudinary;

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import Cloudinary from "../utils/cloudinary.js"
 
 // Cookie Option
 
@@ -13,12 +14,16 @@ const cookieOption = {
 
 //New User Registeration
 export const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, rollNo, secton, department, year, subject, role } =
+  const { name, email,password, department,} =
     req.body;
 
-  if (!name || !email || !rollNo || !secton || !department || !year) {
-    throw new ApiError(400, "Please fill  the required fields fields");
+    console.log(req.body);
+
+  if (!name || !email || !password || !department) {
+    throw new ApiError(400, "Please fill the required fields fields");
   }
+
+  console.log("first test passed");
 
   const existingUser = await User.findOne({ email }).select("-password -refreshToken");
 
@@ -29,12 +34,14 @@ export const registerUser = asyncHandler(async (req, res) => {
   const userData = {
     name,
     email,
-    rollNo,
-    section,
+    password,
     department,
-    year,
-    role,
   };
+
+  if(req.file){
+    const result = await Cloudinary(req.file.path)
+    userData.profilePicture = result.secure_url
+  }
 
   const newUser = await User.create(userData);
 
@@ -47,6 +54,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     department: newUser.department,
     year: newUser.year,
     role: newUser.role,
+    profilePicture: newUser.profilePicture,
   };
 
   res.status(201).json(new ApiResponse(201, "User registered successfully", responseData));

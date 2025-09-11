@@ -22,3 +22,4 @@ userRouter.post("/logout", authMiddleware, logoutUser);
 userRouter.post("/refresh-token", refreshAccessToken);
 
 export default userRouter;
+ 
