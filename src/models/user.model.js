@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
   },
   rollNo: {
     type: Number,
-    required: true,
   },
   department: {
     type: String,
@@ -32,7 +31,7 @@ const userSchema = new mongoose.Schema({
   },
   section: {
     type: String,
-    required: true,
+
   },
   subject: {
     type: [String],
@@ -40,7 +39,6 @@ const userSchema = new mongoose.Schema({
   },
   year: {
     type: Number,
-    required: true,
   },
   deviceIds: {
     type: [String],
