@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   registerUser,
   loginUser,
@@ -9,16 +10,23 @@ import authMiddleware from "../middleware/auth.middleware.js";
 import {
   validateUserRegistration,
   validateUserLogin,
-  handleValidationErrors,
 } from "../middleware/validate.middleware.js";
 
 const userRouter = express.Router();
 
+// Configure multer for single image upload (in-memory or disk). Using disk storage temp folder.
+const upload = multer({ dest: "temp/" });
+
 // User registration
-userRouter.post("/register", validateUserRegistration, handleValidationErrors, registerUser);
+userRouter.post(
+  "/register",
+  upload.single("profilePicture"),
+  validateUserRegistration,
+  registerUser
+);
 
 // User login
-userRouter.post("/login", validateUserLogin, handleValidationErrors, loginUser);
+userRouter.post("/login", validateUserLogin, loginUser);
 
 // User logout
 userRouter.post("/logout", authMiddleware, logoutUser);

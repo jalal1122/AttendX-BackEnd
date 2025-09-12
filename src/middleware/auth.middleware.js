@@ -18,7 +18,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
         throw new ApiError(401, "Invalid token");
     }
 
-    const user = await User.findOne({_id: decoded.id, refreshToken: token})
+    const user = await User.findOne({_id: decoded.id})
 
     if(!user){
         throw new ApiError(404, "User not found");

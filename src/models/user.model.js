@@ -65,7 +65,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to generate Access token
-userSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAccessToken = function () {
   const token = jwt.sign(
     { id: this._id, email: this.email },
     process.env.ACCESS_TOKEN_SECRET,
