@@ -29,9 +29,9 @@ export const validateUserRegistration = [
     .withMessage("Password is required")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, "g")
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
     .withMessage(
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      "Password must contain at least one letter, one number, and one special character"
     ),
   body("department").notEmpty().withMessage("Department is required"),
   // profilePicture is optional at validation layer; multer handles file parsing.
@@ -42,6 +42,7 @@ export const validateUserRegistration = [
   //   }
   //   return true;
   // }),
+  handleValidationErrors,
 ];
 
 export const validateUserLogin = [
@@ -54,14 +55,15 @@ export const validateUserLogin = [
     .notEmpty()
     .withMessage("Password is required")
     .isLength({ min: 8 })
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, "g")
+    .withMessage("Password must be at least 8 characters long")
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
     .withMessage(
-      "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number "
+      "Password must contain at least one letter, one number, and one special character"
     ),
+  handleValidationErrors,
 ];
 
 export default {
-  handleValidationErrors,
   validateUserRegistration,
   validateUserLogin,
 };
