@@ -15,8 +15,8 @@ export const validateUserRegistration = [
   body("name")
     .notEmpty()
     .withMessage("Name is required")
-    .isLength({ min: 6 })
-    .withMessage("Name must be between 6 long")
+    .isLength({ min: 2 }, { max: 50 })
+    .withMessage("Name must be between 2 and 50 characters long")
     .matches(/^[a-zA-Z\s]*$/)
     .withMessage("Name must contain only letters and spaces"),
   body("email")
@@ -34,6 +34,7 @@ export const validateUserRegistration = [
       "Password must contain at least one letter, one number, and one special character"
     ),
   body("department").notEmpty().withMessage("Department is required"),
+
   // profilePicture is optional at validation layer; multer handles file parsing.
   // If you want to enforce required, uncomment below and ensure client sends multipart/form-data.
   // body("profilePicture").custom((value, { req }) => {
@@ -42,6 +43,7 @@ export const validateUserRegistration = [
   //   }
   //   return true;
   // }),
+
   handleValidationErrors,
 ];
 

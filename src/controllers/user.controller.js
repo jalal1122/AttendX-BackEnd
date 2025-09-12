@@ -15,12 +15,13 @@ const cookieOption = {
 
 //New User Registeration
 export const registerUser = asyncHandler(async (req, res) => {
-  console.log(req.body);
-
+  
   const { name, email, password, department, role } = req.body;
 
+  console.log(req.body);
+
   if (!name || !email || !password || !department) {
-    throw new ApiError(400, "Please fill the required fields fields");
+    throw new ApiError(400, "Please fill the required fields");
   }
 
   const existingUser = await User.findOne({ email }).select(
