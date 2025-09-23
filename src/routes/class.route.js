@@ -16,7 +16,7 @@ const classRouter = express.Router();
 // @desc Get all classes
 // @route GET /api/classes
 // @access Public
-classRouter.get("/", getClasses);
+classRouter.get("/", authMiddleware, getClasses);
 
 // @desc Get class by ID
 // @route GET /api/classes/:id

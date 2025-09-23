@@ -37,7 +37,7 @@ export const createClass = asyncHandler(async (req, res) => {
   //   create a new class
   const newClass = new Class({
     className,
-    teacher: teacherId,
+    teacher: teacherId, 
   });
 
   //   save the new class
@@ -51,11 +51,16 @@ export const createClass = asyncHandler(async (req, res) => {
 
 // Get All Classes for the respective login teacher
 export const getClasses = asyncHandler(async (req, res) => {
+  console.log("Get Classes called");
+
   // get the teacher id from the req user
   const teacherId = req.user._id;
 
   //   find all classes taught by the teacher
   const classes = await Class.find({ teacher: teacherId });
+
+  console.log(classes);
+  
 
   //   populate the teacher and students fields
   await Promise.all(
