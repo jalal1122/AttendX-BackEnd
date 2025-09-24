@@ -120,7 +120,9 @@ export const loginUser = asyncHandler(async (req, res) => {
 
 // Logout User
 export const logoutUser = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies;
+
+  console.log("Logging out user");
 
   res.cookie("accessToken", "", { ...cookieOption, maxAge: 0 });
   res.cookie("refreshToken", "", { ...cookieOption, maxAge: 0 });

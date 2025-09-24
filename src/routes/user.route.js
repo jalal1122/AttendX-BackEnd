@@ -16,7 +16,10 @@ import {
 const userRouter = express.Router();
 
 // Configure multer to write to OS temp dir (works on Vercel serverless: /tmp)
-const upload = multer({ dest: os.tmpdir() });
+const upload = multer({
+  dest: process.env.NODE_ENV === "production" ? os.tmpdir() : "temp/",
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
+});
 
 // User registration
 userRouter.post(
