@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import os from "os";
 import {
   registerUser,
   loginUser,
@@ -14,8 +15,8 @@ import {
 
 const userRouter = express.Router();
 
-// Configure multer for single image upload (in-memory or disk). Using disk storage temp folder.
-const upload = multer({ dest: "temp/" });
+// Configure multer to write to OS temp dir (works on Vercel serverless: /tmp)
+const upload = multer({ dest: os.tmpdir() });
 
 // User registration
 userRouter.post(

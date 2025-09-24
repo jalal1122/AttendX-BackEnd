@@ -27,6 +27,13 @@ app.use(cookieparser());
 
 // *** ROUTERS *** //
 
+// Welcome Route
+app.get("/", (req, res) => {
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Welcome to AttendX API", { status: "OK" }));
+});
+
 // User Router
 app.use("/api/user", userRouter);
 
