@@ -26,7 +26,7 @@ classRouter.get("/:id", getClassById);
 // @desc Get class by code
 // @route GET /api/classes/code/:code
 // @access Public
-classRouter.get("/:code", getClassByCode);
+classRouter.get("/:classCode", getClassByCode);
 
 // @desc Get class by name
 // @route GET /api/classes/name/:name

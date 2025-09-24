@@ -37,7 +37,7 @@ export const createClass = asyncHandler(async (req, res) => {
   //   create a new class
   const newClass = new Class({
     className,
-    teacher: teacherId, 
+    teacher: teacherId,
   });
 
   //   save the new class
@@ -60,7 +60,6 @@ export const getClasses = asyncHandler(async (req, res) => {
   const classes = await Class.find({ teacher: teacherId });
 
   console.log(classes);
-  
 
   //   populate the teacher and students fields
   await Promise.all(
@@ -104,9 +103,11 @@ export const getClassByCode = asyncHandler(async (req, res) => {
   // get the class code from the req params
   const { classCode } = req.params;
 
+  console.log(classCode);
+
   //   find the class by code
   const searchedClass = await Class.find({
-    classCode: { $regex: classCode, $options: "i" },
+    classCode: classCode,
   });
 
   //   check if class exists
