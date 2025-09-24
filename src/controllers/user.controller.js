@@ -11,11 +11,13 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 const cookieOption = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "" : "Lax",
+  maxAge: 24 * 60 * 60 * 1000, // 7 day
+  expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 7 days
 };
 
 //New User Registeration
 export const registerUser = asyncHandler(async (req, res) => {
-  
   const { name, email, password, department, role } = req.body;
 
   console.log(req.body);
