@@ -105,7 +105,7 @@ export const getClassByCode = asyncHandler(async (req, res) => {
   const { classCode } = req.params;
 
   //   find the class by code
-  const searchedClass = await Class.findOne({
+  const searchedClass = await Class.find({
     classCode: { $regex: classCode, $options: "i" },
   });
 
