@@ -1,8 +1,15 @@
+import mongoose from "mongoose";
 import Class from "../models/class.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
+
+// Utility: validate ObjectId
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+// Utility: escape regex special chars
+const escapeRegex = (str = "") => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // Create a new Class
 export const createClass = asyncHandler(async (req, res) => {
@@ -51,23 +58,18 @@ export const createClass = asyncHandler(async (req, res) => {
 
 // Get All Classes for the respective login teacher
 export const getClasses = asyncHandler(async (req, res) => {
-  console.log("Get Classes called");
-
   // get the teacher id from the req user
   const teacherId = req.user._id;
 
-  //   find all classes taught by the teacher
-  const classes = await Class.find({ teacher: teacherId });
+  // ensure only teachers can list their classes
+  if (req.user.role !== "teacher") {
+    throw new ApiError(403, "Only teachers can view their classes");
+  }
 
-  console.log(classes);
-
-  //   populate the teacher and students fields
-  await Promise.all(
-    classes.map(async (classItem) => {
-      await classItem.populate("teacher");
-      await classItem.populate("students");
-    })
-  );
+  //   find all classes taught by the teacher and populate fields
+  const classes = await Class.find({ teacher: teacherId })
+    .populate("teacher")
+    .populate("students");
 
   //   respond with populated classes
   res
@@ -80,22 +82,24 @@ export const getClassById = asyncHandler(async (req, res) => {
   // get the class id from the req params
   const { classId } = req.params;
 
+  if (!isValidObjectId(classId)) {
+    throw new ApiError(400, "Invalid class ID");
+  }
+
   //   find the class by id
-  const searchedClass = await Class.findById(classId);
+  const searchedClass = await Class.findById(classId)
+    .populate("teacher")
+    .populate("students");
 
   //   check if class exists
   if (!searchedClass) {
     throw new ApiError(404, "Class not found");
   }
 
-  //   populate the teacher and students fields
-  const populatedClass = await searchedClass.populate("teacher");
-  populatedClass.populate("students");
-
   //   respond with the populated class
   res
     .status(200)
-    .json(new ApiResponse(200, "Class fetched successfully", populatedClass));
+    .json(new ApiResponse(200, "Class fetched successfully", searchedClass));
 });
 
 // get a class by class Code
@@ -103,26 +107,22 @@ export const getClassByCode = asyncHandler(async (req, res) => {
   // get the class code from the req params
   const { classCode } = req.params;
 
-  console.log(classCode);
-
-  //   find the class by code
-  const searchedClass = await Class.find({
-    classCode: classCode,
-  });
+  //   find the class by code (case-insensitive exact match)
+  const searchedClass = await Class.findOne({
+    classCode: { $regex: `^${escapeRegex(classCode)}$`, $options: "i" },
+  })
+    .populate("teacher")
+    .populate("students");
 
   //   check if class exists
   if (!searchedClass) {
     throw new ApiError(404, "Class not found");
   }
 
-  //   populate the teacher and students fields
-  const populatedClass = await searchedClass.populate("teacher");
-  populatedClass.populate("students");
-
   //   respond with the populated class
   res
     .status(200)
-    .json(new ApiResponse(200, "Class fetched successfully", populatedClass));
+    .json(new ApiResponse(200, "Class fetched successfully", searchedClass));
 });
 
 // get a class by class Name
@@ -133,27 +133,29 @@ export const getClassByName = asyncHandler(async (req, res) => {
   //   find the class by name
   const searchedClass = await Class.findOne({
     className: { $regex: className, $options: "i" },
-  });
+  })
+    .populate("teacher")
+    .populate("students");
 
   //   check if class exists
   if (!searchedClass) {
     throw new ApiError(404, "Class not found");
   }
 
-  //   populate the teacher and students fields
-  const populatedClass = await searchedClass.populate("teacher");
-  populatedClass.populate("students");
-
   //   respond with the populated class
   res
     .status(200)
-    .json(new ApiResponse(200, "Class fetched successfully", populatedClass));
+    .json(new ApiResponse(200, "Class fetched successfully", searchedClass));
 });
 
 // join a class(for Students)
 export const joinClass = asyncHandler(async (req, res) => {
   // get the class id from the req params
   const { classId } = req.params;
+
+  if (!isValidObjectId(classId)) {
+    throw new ApiError(400, "Invalid class ID");
+  }
 
   //   get the student id from the req user
   const studentId = req.user._id;
@@ -195,6 +197,10 @@ export const deleteClass = asyncHandler(async (req, res) => {
   // get the class Id from the req body
   const { classId } = req.params;
 
+  if (!isValidObjectId(classId)) {
+    throw new ApiError(400, "Invalid class ID");
+  }
+
   // check if user is a teacher
   const teacher = await User.findById(req.user._id);
   if (teacher.role !== "teacher") {
@@ -207,6 +213,14 @@ export const deleteClass = asyncHandler(async (req, res) => {
   // check if class exists
   if (!classToDelete) {
     throw new ApiError(404, "Class not found");
+  }
+
+  // ensure the requesting teacher owns the class (or is admin)
+  if (
+    classToDelete.teacher?.toString() !== req.user._id.toString() &&
+    req.user.role !== "admin"
+  ) {
+    throw new ApiError(403, "You are not allowed to delete this class");
   }
 
   // find the class by id and delete

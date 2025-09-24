@@ -27,7 +27,8 @@ const classSchema = new mongoose.Schema(
 );
 
 classSchema.methods.checkIfStudentEnrolled = function (studentId) {
-  return this.students.includes(studentId);
+  const target = studentId?.toString();
+  return this.students.some((s) => s?.toString() === target);
 };
 
 // Method to generate class code
