@@ -52,7 +52,7 @@ export const createSession = asyncHandler(async (req, res, next) => {
   //   save the session
   await newSession.save();
 
-  //   respond with the created session
+  // respond with the created session
   res
     .status(201)
     .json(new ApiResponse(201, "Session created successfully", newSession));

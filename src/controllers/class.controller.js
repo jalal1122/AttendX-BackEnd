@@ -56,6 +56,25 @@ export const createClass = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, "Class created successfully", newClass));
 });
 
+// Get Joined Classes for the respective login student
+export const getJoinedClasses = asyncHandler(async (req, res) => {
+  const studentId = req.user._id;
+
+  // Ensure only students can view their joined classes
+  if (req.user.role !== "student") {
+    throw new ApiError(403, "Only students can view joined classes");
+  }
+
+  // Find classes where this student is enrolled
+  const classes = await Class.find({ students: studentId })
+    .populate("teacher")
+    .populate("students");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Joined classes fetched successfully", classes));
+});
+
 // Get All Classes for the respective login teacher
 export const getClasses = asyncHandler(async (req, res) => {
   // get the teacher id from the req user
@@ -151,10 +170,11 @@ export const getClassByName = asyncHandler(async (req, res) => {
 // join a class(for Students)
 export const joinClass = asyncHandler(async (req, res) => {
   // get the class id from the req params
-  const { classId } = req.params;
+  const { classCode } = req.params;
 
-  if (!isValidObjectId(classId)) {
-    throw new ApiError(400, "Invalid class ID");
+  // validate class Code
+  if (!classCode) {
+    throw new ApiError(400, "Class code is required");
   }
 
   //   get the student id from the req user
@@ -170,7 +190,9 @@ export const joinClass = asyncHandler(async (req, res) => {
   }
 
   //   find the class to join
-  const classToJoin = await Class.findById(classId);
+  const classToJoin = await Class.findOne({
+    classCode: { $regex: `^${escapeRegex(classCode)}$`, $options: "i" },
+  });
 
   //   check if class exists
   if (!classToJoin) {

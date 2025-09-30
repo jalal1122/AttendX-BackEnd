@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteClass,
   joinClass,
+  getJoinedClasses,
   getClassByName,
   getClassByCode,
   getClassById,
@@ -41,7 +42,12 @@ classRouter.post("/create", authMiddleware, createClass);
 // @desc Join a class
 // @route POST /api/class/join/:classId
 // @access Private
-classRouter.post("/join/:classId", authMiddleware, joinClass);
+classRouter.post("/join/:classCode", authMiddleware, joinClass);
+
+// @desc Get joined classes for logged-in student
+// @route GET /api/class/joined
+// @access Private
+classRouter.get("/joined", authMiddleware, getJoinedClasses);
 
 // @desc Delete a class
 // @route DELETE /api/class/:classId
