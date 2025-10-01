@@ -31,18 +31,16 @@ const userSchema = new mongoose.Schema({
   },
   section: {
     type: String,
-
+  },
+  semester: {
+    type: Number,
   },
   subject: {
     type: [String],
     default: [],
   },
-  year: {
-    type: Number,
-  },
-  deviceIds: {
-    type: [String],
-    default: [],
+  session: {
+    type: String,
   },
   refreshToken: {
     type: String,
