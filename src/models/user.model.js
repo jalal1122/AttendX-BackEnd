@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
   session: {
     type: String,
   },
+  profilePicture: {
+    type: String,
+    default: null,
+  },
   refreshToken: {
     type: String,
     default: null,

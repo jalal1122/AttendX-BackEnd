@@ -139,6 +139,31 @@ export const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "User logged out successfully"));
 });
 
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // check if the user exists
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const { name, rollNo, section, department, semester, subject, session } = req.body;
+
+  // Update user fields if provided
+  if (name) user.name = name;
+  if (rollNo) user.rollNo = rollNo;
+  if (section) user.section = section;
+  if (department && (user.role === "teacher" || user.role === "admin")) user.department = department;
+  if (semester) user.semester = semester;
+  if (subject) user.subject = subject;
+  if (session) user.session = session;
+
+  await user.save();
+
+  res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
+})
+
 // Refreshing Access Token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
